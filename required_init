@@ -1,0 +1,37 @@
+#! /usr/bin/evn bash
+
+# Before running this script, please download postgresql-server based on your distro.
+
+read -rp "Enter name for your server file (for default enter myLocalhost): " NAME
+
+# Creating required DB connections
+
+cd ..
+
+REQ_DIR="db"
+create_dir=""
+
+if [[ -d "$REQ_DIR" ]]; then
+    create_dir+="db2"
+else
+    create_dir+="db"
+fi
+
+mkdir "$create_dir" && cd "$create_dir"
+initdb -D .
+sed -i -e "$ a hostssl all             all             127.0.0.1/32            scram-sha-256" pg_hba.conf
+read -rp "Enter your port for the database(for default, enter 5432) " db_port
+
+sed -i "64s/^#//; 64s/5432/$db_port/" postgresql.conf
+sed -i "105s/^#//; 105s/off/on/" postgresql.conf
+sed -i "106s/^#//; 106s/''/'..\/certs\/myCA.pem'/" postgresql.conf
+sed -i "107s/^#//; 107s/'server.crt'/'..\/certs\/$NAME.crt'/" postgresql.conf
+sed -i "110s/^#//; 110s/'server.key'/'..\/certs\/$NAME.key'/" postgresql.conf
+
+pg_ctl -D . -l logfile start
+
+read -rp "Enter the name of the database (for current implementation, please enter 'LensDB') " db_name
+read -rp "Enter the name of the user (for current implementation, please enter 'tigress') " db_user
+
+createdb -U "$db_user" -p "$db_port" "$db_name"
+psql -d "$db_name" -U "$db_user" -p "$db_port" -f "../peoples-lens/sql/peoplesLens.sql"
