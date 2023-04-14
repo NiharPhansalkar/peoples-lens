@@ -48,6 +48,18 @@ app.get('/login/userLogin.html', (req, res) => {
     res.sendFile(path.join(path.resolve(__dirname, '../')), '/login/userLogin.html')
 });
 
+app.get('/signUp/userSignUp.html', (req, res) => {
+    res.sendFile(path.join(path.resolve(__dirname, '../')), '/signUp/userSignUp.html');
+});
+
+app.get('/user_information/userInfo.html', (req, res) => {
+    res.sendFile(path.join(path.resolve(__dirname, '../')), '/user_information/userInfo.html');
+});
+
+app.get('/otp/userOTP.html', (req, res) => {
+    res.sendFile(path.join(path.resolve(__dirname, '../')), '/otp/userOTP.html');
+});
+
 // Starting https server
 const server = https.createServer(options, app);
 server.listen(port, () => {

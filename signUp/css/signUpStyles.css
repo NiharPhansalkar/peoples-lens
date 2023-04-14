@@ -76,7 +76,6 @@ body {
 
 .btn-group button {
     padding: 4px;
-    font-size: 16px;
     margin: 2px 8px 2px 8px;
     border: none;
     outline: none;
@@ -87,7 +86,7 @@ body {
     font-size: 0.9em;
     border-radius: 4px;
     font-weight: 600;
-    width: 200px;
+    width: 100%;
 }
 
 .btn-group button:active {
