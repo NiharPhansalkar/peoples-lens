@@ -32,7 +32,7 @@ img {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    /*border: 2px solid black;*/
+    gap: 20px;
     border-radius: 12px;
     padding: 12px;
 }
@@ -41,6 +41,18 @@ img {
     margin: 2px 12px 8px 4px;
     width: 130px;
     height: 35px;
+    background-color: white;
+    border: 2px solid black;
+    outline: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: black;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    transition: all 0.2s ease;
+}
+
+.btn-group button:hover {
     /* fallback for old browsers */
     background: #6a11cb;
 
@@ -49,10 +61,10 @@ img {
 
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     background: linear-gradient(to right, rgba(106, 17, 203, 0.9), rgba(37, 117, 252, 0.9));
-
-    border: none;
-    outline: none;
-    border-radius: 8px;
-    cursor: pointer;
     color: white;
+    border: none;
+    box-shadow: 0 -5px 25px rgba(106, 17, 203, 0.3),
+        0 5px 25px rgba(37, 117, 252, 0.6);
+    letter-spacing: 0.2rem;
+    transition: all 0.2s ease;
 }
