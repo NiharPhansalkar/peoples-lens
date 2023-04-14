@@ -44,6 +44,10 @@ app.get('/welcome.html', (req, res) => {
     res.sendFile(path.join(path.resolve(__dirname, '../')), 'index.html');
 });
 
+app.get('/login/userLogin.html', (req, res) => {
+    res.sendFile(path.join(path.resolve(__dirname, '../')), '/login/userLogin.html')
+});
+
 // Starting https server
 const server = https.createServer(options, app);
 server.listen(port, () => {
