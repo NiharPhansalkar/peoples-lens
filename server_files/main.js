@@ -60,6 +60,10 @@ app.get('/otp/userOTP.html', (req, res) => {
     res.sendFile(path.join(path.resolve(__dirname, '../')), '/otp/userOTP.html');
 });
 
+app.get('/user_image/userImage.html', (req, res) => {
+    res.sendFile(path.join(path.resolve(__dirname, '../')), '/user_image/userImage.html');
+});
+
 // Starting https server
 const server = https.createServer(options, app);
 server.listen(port, () => {
