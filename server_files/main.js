@@ -86,15 +86,21 @@ app.post('/signUp/userSignUp.html', async (req, res) => {
         let newOtp = generateOTP();
         
         const hashPass = await bcrypt.hash(req.body['user-pswd'], 10);
+
+        const boolPass = await bcrypt.compare(req.body['user-confirm-pswd'], hashPass);
         
-        sendOTP(req.body['user-email'], newOtp);
-        console.log(newOtp);
+        if (!boolPass) {
+            res.redirect('/signUp/userSignUp.html?error=-1');
+        } else {
+            sendOTP(req.body['user-email'], newOtp);
+            console.log(newOtp);
 
-        req.session.hashPass = hashPass;
-        req.session.email = req.body['user-email'];
-        req.session.generatedOtp = newOtp;
+            req.session.hashPass = hashPass;
+            req.session.email = req.body['user-email'];
+            req.session.generatedOtp = newOtp;
 
-        res.redirect('/otp/userOTP.html');
+            res.redirect('/otp/userOTP.html');
+        }
     } catch (e) {
         console.log(e);
     }
