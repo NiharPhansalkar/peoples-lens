@@ -22,8 +22,8 @@ body {
 }
 
 .form-container {
-    height: 500px;
-    width: 500px;
+    height: 400px;
+    width: 400px;
     border: 2px solid white;
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.5);
@@ -148,6 +148,7 @@ body {
     align-items: center;
     margin: auto;
     position: relative;
+    margin-top: 4.7rem;
 }
 
 .circle-label {

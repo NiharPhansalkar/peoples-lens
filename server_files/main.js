@@ -115,6 +115,7 @@ app.post('/otp/userOTP.html', async (req, res) => {
             const dbres = await pool.query(dbQuery);
 
             delete req.session.generatedOtp;
+            delete req.session.hashPass;
 
             res.redirect('/user_information/userInfo.html');
         } else {
@@ -135,11 +136,28 @@ app.post('/user_information/userInfo.html', async (req, res) => {
         const pool = createPool();
 
         const dbres = await pool.query(dbQuery, [req.body['user-name'], req.body['user-phone'], req.body['user-domain'], req.body['user-bio'], req.session.email]);
-
-        res.redirect('/user_image/userImage.html');
+        
+        req.session.name = req.body['user-name'];
+        res.redirect('/capture_person/capturePerson.html');
     } catch (e) {
         console.log(e);
     }
+});
+
+app.post('/capture_person/capturePerson.html', async (req, res) => {
+    const imageDataUrl = req.body.imageDataUrl; 
+    const fileData = imageDataUrl.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(fileData, 'base64');
+    
+    let dbQuery = `
+        UPDATE user_information 
+        SET image = $1
+        WHERE
+        email = $2;
+    `;
+    const pool = createPool();
+    const dbres = await pool.query(dbQuery, [buffer, req.session.email])
+    res.redirect('/login/userLogin.html');
 });
 
 // Starting https server
