@@ -82,7 +82,8 @@ app.post('/signUp/userSignUp.html', async (req, res) => {
         
         const hashPass = await bcrypt.hash(req.body['user-pswd'], 10);
         
-        sendOTP(req.body['user-email'], newOtp);
+        //sendOTP(req.body['user-email'], newOtp);
+        console.log(newOtp);
 
         req.session.hashPass = hashPass;
         req.session.email = req.body['user-email'];
@@ -96,10 +97,10 @@ app.post('/signUp/userSignUp.html', async (req, res) => {
 
 app.post('/otp/userOTP.html', async (req, res) => {
     try {
-        if (req.body['user-otp'] === req.session.generatedOtp) {
+        if (parseInt(req.body['user-otp']) === req.session.generatedOtp) {
             // Creating DB query
             let dbQuery = `
-            INSERT INTO (email, password)
+            INSERT INTO user_information(email, password)
             VALUES (
                 '${req.session.email}',
                 '${req.session.hashPass}'
@@ -109,8 +110,31 @@ app.post('/otp/userOTP.html', async (req, res) => {
 
             const dbres = await pool.query(dbQuery);
 
+            delete req.session.generatedOtp;
+
             res.redirect('/user_information/userInfo.html');
+        } else {
+            res.redirect('/otp/userOTP.html?err=-1');
         }
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+app.post('/user_information/userInfo.html', async (req, res) => {
+    try {
+        const dbQuery = `
+            UPDATE user_information
+            SET name = $1, phone = $2, domain = $3, bio = $4 
+            WHERE email = $5;
+        `;
+        const pool = createPool();
+
+        const dbres = await pool.query(dbQuery, [req.body['user-name'], req.body['user-phone'], req.body['user-domain'], req.body['user-bio'], req.session.email]);
+
+        res.redirect('/user_image/userImage.html');
+    } catch (e) {
+        console.log(e);
     }
 });
 
@@ -121,13 +145,14 @@ server.listen(port, () => {
 });
 
 function generateOTP() {
-    const min = 1000000;
-    return Math.floor(Math.random() * min);
+  const min = 100000;
+  const max = 999999;
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 function createPool() {
     return new Pool({
-        database: "information",
+        database: "LensDB",
         port: 5432,
         user: "tigress",
         ssl: {
