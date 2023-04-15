@@ -64,6 +64,10 @@ app.get('/user_image/userImage.html', (req, res) => {
     res.sendFile(path.join(path.resolve(__dirname, '../')), '/user_image/userImage.html');
 });
 
+app.get('/capture_person/capturePerson.html', (req, res) => {
+    res.sendFile(path.join(path.resolve(__dirname, '../')), '/capture_person/capturePerson.html');
+});
+
 // Post method handling
 
 app.use(bodyParser.urlencoded({ extended : true })); // Parse incoming request bodies in a middleware before your handlers, available under the req.body property
@@ -82,7 +86,7 @@ app.post('/signUp/userSignUp.html', async (req, res) => {
         
         const hashPass = await bcrypt.hash(req.body['user-pswd'], 10);
         
-        //sendOTP(req.body['user-email'], newOtp);
+        sendOTP(req.body['user-email'], newOtp);
         console.log(newOtp);
 
         req.session.hashPass = hashPass;
@@ -190,8 +194,8 @@ async function sendOTP(userMail, userOTP) {
         host: "smtp.gmail.com",
         secure: false,
         auth: {
-            user: "",
-            pass: "",
+            user: "peoples.lens.1@gmail.com",
+            pass: "xchrygmbdlxwzycc",
         },
         tls: {
             rejectUnauthorized: false,
@@ -199,7 +203,7 @@ async function sendOTP(userMail, userOTP) {
     });
 
     let info = await transporter.sendMail({
-        from: "PeoplesLens <PL@gmail.com>",
+        from: "People's Lens <peoples.lens.1@gmail.com>",
         to: `${userMail}`,
         subject: "Email Confirmation",
         html: `<p>Hello! Below is the OTP for your email confirmation! Thank you for registering to People's Lens!</p>
