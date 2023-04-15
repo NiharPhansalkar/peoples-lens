@@ -221,8 +221,8 @@ async function sendOTP(userMail, userOTP) {
         host: "smtp.gmail.com",
         secure: false,
         auth: {
-            user: "peoples.lens.1@gmail.com",
-            pass: "xchrygmbdlxwzycc",
+            user: "digichit1@gmail.com",
+            pass: "pdocouapfixqowjm",
         },
         tls: {
             rejectUnauthorized: false,
