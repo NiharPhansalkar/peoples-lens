@@ -7,6 +7,7 @@ const fs = require('fs'); // To access the file system
 const path = require('path'); // For functions like path.join/path.resolve
 const { Pool } = require('pg'); // Connection to postgres
 const nodemailer = require('nodemailer');
+const { promisify } = require('util');
 
 const port = 3000;
 
@@ -148,16 +149,24 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
     const imageDataUrl = req.body.imageDataUrl; 
     const fileData = imageDataUrl.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(fileData, 'base64');
+    const writeFile = promisify(fs.writeFile);
     
-    let dbQuery = `
-        UPDATE user_information 
-        SET image = $1
-        WHERE
-        email = $2;
+    const dbQuery = `
+        SELECT id 
+        FROM user_information
+        WHERE email = $1;
     `;
     const pool = createPool();
-    const dbres = await pool.query(dbQuery, [buffer, req.session.email])
-    res.redirect('/login/userLogin.html');
+    const dbres = await pool.query(dbQuery, [req.session.email]);
+
+    const filePath = path.join(path.resolve(__dirname, "../"), 'face_images/', `${dbres.rows[0].id}.jpeg`);
+    try {
+        await writeFile(filePath, buffer);
+        res.status(200).json({ success : true });
+    } catch (err) {
+        console.error('Error writing image file', err);
+        res.status(500).json({ success: false, error: 'Error writing image file' });
+    }
 });
 
 // Starting https server

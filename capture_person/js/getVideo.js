@@ -25,19 +25,15 @@ camBtn.addEventListener("click", () => {
     })
     .then(res => {
         if (res.ok) {
+            return res.json();
         } else {
             console.log("Error uploading image");
         }
     })
+    .then(data => {
+        window.location.href = '/login/userLogin.html';
+    })
     .catch(error => {
         console.error('Error uploading image', error);
     });
-    //const downloadLink = document.createElement("a");
-    //downloadLink.href = image_data_url;
-    //downloadLink.download = "selfie.jpeg";
-    //document.body.appendChild(downloadLink);
-    //downloadLink.click();
-    //document.body.removeChild(downloadLink);
-
-    //window.location.href = '/user_image/userImage.html';
 });
