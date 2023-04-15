@@ -64,8 +64,120 @@ app.get('/user_image/userImage.html', (req, res) => {
     res.sendFile(path.join(path.resolve(__dirname, '../')), '/user_image/userImage.html');
 });
 
+// Post method handling
+
+app.use(bodyParser.urlencoded({ extended : true })); // Parse incoming request bodies in a middleware before your handlers, available under the req.body property
+
+app.use(express.json());
+
+app.use(session({
+    secret: "otp-secret",
+    resave: false,
+    saveUninitialized: true
+}));
+
+app.post('/signUp/userSignUp.html', async (req, res) => {
+    try {
+        let newOtp = generateOTP();
+        
+        const hashPass = await bcrypt.hash(req.body['user-pswd'], 10);
+        
+        sendOTP(req.body['user-email'], newOtp);
+
+        req.session.hashPass = hashPass;
+        req.session.email = req.body['user-email'];
+        req.session.generatedOtp = newOtp;
+
+        res.redirect('/otp/userOTP.html');
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+app.post('/otp/userOTP.html', async (req, res) => {
+    try {
+        if (req.body['user-otp'] === req.session.generatedOtp) {
+            // Creating DB query
+            let dbQuery = `
+            INSERT INTO (email, password)
+            VALUES (
+                '${req.session.email}',
+                '${req.session.hashPass}'
+            );`;
+
+            const pool = createPool();
+
+            const dbres = await pool.query(dbQuery);
+
+            res.redirect('/user_information/userInfo.html');
+        }
+    }
+});
+
 // Starting https server
 const server = https.createServer(options, app);
 server.listen(port, () => {
     console.log("Server is listening on port " + port);
 });
+
+function generateOTP() {
+    const min = 1000000;
+    return Math.floor(Math.random() * min);
+}
+
+function createPool() {
+    return new Pool({
+        database: "information",
+        port: 5432,
+        user: "tigress",
+        ssl: {
+            rejectUnauthorized: false,
+            key: fs
+                .readFileSync(
+                    path.join(
+                        path.resolve(__dirname, "../../"),
+                        "/certs/myLocalhost.key"
+                    )
+                )
+                .toString(),
+            cert: fs
+                .readFileSync(
+                    path.join(
+                        path.resolve(__dirname, "../../"),
+                        "/certs/myLocalhost.crt"
+                    )
+                )
+                .toString(),
+            ca: fs
+                .readFileSync(
+                    path.join(
+                        path.resolve(__dirname, "../../"),
+                        "/certs/myCA.pem"
+                    )
+                )
+                .toString(),
+        },
+    });
+}
+
+async function sendOTP(userMail, userOTP) {
+    let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        secure: false,
+        auth: {
+            user: "",
+            pass: "",
+        },
+        tls: {
+            rejectUnauthorized: false,
+        },
+    });
+
+    let info = await transporter.sendMail({
+        from: "PeoplesLens <PL@gmail.com>",
+        to: `${userMail}`,
+        subject: "Email Confirmation",
+        html: `<p>Hello! Below is the OTP for your email confirmation! Thank you for registering to People's Lens!</p>
+            <h2>${userOTP}</h2>`,
+    });
+}

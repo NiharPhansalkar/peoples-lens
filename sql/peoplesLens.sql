@@ -1,8 +1,7 @@
 CREATE TABLE user_information(
-    bio varchar(),
-    domain varchar(),
+    bio varchar( 300 ),
+    domain varchar( 25 ),
     email varchar( 255 ) UNIQUE NOT NULL,
-    image varchar(),
     linkedin varchar( 100 ) UNIQUE,
     name varchar ( 50 ) NOT NULL,
     otp INTEGER,
