@@ -61,10 +61,6 @@ app.get('/otp/userOTP.html', (req, res) => {
     res.sendFile(path.join(path.resolve(__dirname, '../')), '/otp/userOTP.html');
 });
 
-app.get('/user_image/userImage.html', (req, res) => {
-    res.sendFile(path.join(path.resolve(__dirname, '../')), '/user_image/userImage.html');
-});
-
 app.get('/capture_person/capturePerson.html', (req, res) => {
     res.sendFile(path.join(path.resolve(__dirname, '../')), '/capture_person/capturePerson.html');
 });
@@ -80,6 +76,37 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+
+app.post('/login/userLogin.html', async (req, res) => {
+    try {
+        const pool = createPool();
+        const dbQuery = `
+            SELECT password FROM user_information
+            WHERE email = $1;
+        `;
+
+        const dbres = await pool.query(dbQuery, [req.body['user-email']]);
+        
+        if (dbres.rows.length !== 0) {
+            const boolPass = await bcrypt.compare(req.body['user-pswd'], dbres.rows[0].password); 
+
+            if (boolPass) {
+                // Correct credentials
+                res.redirect('/login/userLogin.html');
+            } else {
+                // Incorrect password
+
+                res.redirect('/login/userLogin.html?error=-1');
+            }
+        } else {
+            // Not signed up
+            
+            res.redirect('/login/userLogin.html?error=-2');
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
 
 app.post('/signUp/userSignUp.html', async (req, res) => {
     try {
