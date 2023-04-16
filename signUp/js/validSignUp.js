@@ -3,6 +3,7 @@ const currUrl = window.location.href;
 let paramString = currUrl.split("?")[1];
 
 window.addEventListener("load", () => {
+    console.log(paramString);
     if(paramString.includes("error=-1")) {
         pswdErr.textContent = "Password and Confirm Password do not match!";
         pswdErr.style.color = "red";
