@@ -65,6 +65,22 @@ app.get('/capture_person/capturePerson.html', (req, res) => {
     res.sendFile(path.join(path.resolve(__dirname, '../')), '/capture_person/capturePerson.html');
 });
 
+app.get('/recognize_user/recognizeUser.html', (req, res) => {
+    res.sendFile(path.join(path.resolve(__dirname, '../')), '/recognize_user/recognizeUser.html');
+});
+
+app.get('/recognize_user/sendID', async (req, res) => {
+    try {
+        const pool = createPool();
+        const result = await pool.query('SELECT id FROM user_information');
+        const ids = result.rows.map(row => row.id);
+        res.json(ids);
+    } catch (err) {
+        console.error(err);
+        res.json([]);
+    }
+});
+
 // Post method handling
 
 app.use(bodyParser.urlencoded({ extended : true })); // Parse incoming request bodies in a middleware before your handlers, available under the req.body property
@@ -92,7 +108,7 @@ app.post('/login/userLogin.html', async (req, res) => {
 
             if (boolPass) {
                 // Correct credentials
-                res.redirect('/login/userLogin.html');
+                res.redirect('/recognize_user/recognizeUser.html');
             } else {
                 // Incorrect password
 
@@ -192,8 +208,10 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
     const pool = createPool();
     const dbres = await pool.query(dbQuery, [req.session.email]);
 
-    const filePath = path.join(path.resolve(__dirname, "../"), 'face_images/', `${dbres.rows[0].id}.jpeg`);
+    const dirPath = path.join(path.resolve(__dirname, "../"), '/recognize_user/labels/', `${dbres.rows[0].id}/`);
+    const filePath = path.join(dirPath, `${dbres.rows[0].id}.jpeg`);
     try {
+        await fs.promises.mkdir(dirPath, { recursive : true });
         await writeFile(filePath, buffer);
         res.status(200).json({ success : true });
     } catch (err) {
