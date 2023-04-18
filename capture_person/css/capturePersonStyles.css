@@ -57,3 +57,10 @@
 .canvas {
     display: none;
 }
+
+@media (max-width: 700px) {
+    .camera {
+        height: 400px;        
+        width: 300px;
+    }
+}

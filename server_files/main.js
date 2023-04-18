@@ -89,6 +89,28 @@ app.get('/recognize_user/sendID', async (req, res) => {
     }
 });
 
+app.get('/recognize_user/sendInfo', async (req, res) => {
+    try {
+        const pool = createPool();
+        const result = await pool.query('SELECT id, name, domain FROM user_information');
+        if (result.rows.length === 0) {
+            return res.json([]);
+        }
+        const returnVal = result.rows.map(row => {
+            return {
+                id: row.id,
+                name: row.name,
+                domain: row.domain,
+            }
+        });
+
+        res.json(returnVal);
+    } catch (error) {
+        console.log(err);
+        res.json([]);
+    } 
+});
+
 // Post method handling
 
 app.use(bodyParser.urlencoded({ extended : true })); // Parse incoming request bodies in a middleware before your handlers, available under the req.body property

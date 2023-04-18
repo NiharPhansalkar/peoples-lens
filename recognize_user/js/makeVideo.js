@@ -44,18 +44,30 @@ async function getLabels() {
     }
 }
 
+async function getUserInformation() {
+    try {
+        const response = await fetch('/recognize_user/sendInfo');
+        const info = await response.json();
+        return info;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 async function faceRecognition() {
     const labels = await getLabels();
     const labeledFaceDescriptors = await getLabeledFaceDescriptions(labels);
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
 
-    video.addEventListener("play", () => {
-       const canvas = faceapi.createCanvasFromMedia(video); 
+    video.addEventListener("play", async () => {
+        const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
 
         document.body.append(canvas);
         const displaySize = {width: video.width, height: video.height};
 
         faceapi.matchDimensions(canvas, displaySize);
+
+        const userInfo = await getUserInformation();
 
         setInterval(async () => {
             const detections = await faceapi
@@ -71,18 +83,24 @@ async function faceRecognition() {
                 return faceMatcher.findBestMatch(d.descriptor);
             });
 
-            results.forEach((result, i)=> {
+            results.forEach(async (result, i)=> {
                 const box = resizedDetections[i].detection.box;
-                const drawBox = new faceapi.draw.DrawBox(box, {label: "Click to View Details"});
-                drawBox.draw(canvas);
-                canvas.addEventListener('click', (event) => {
-                    const x = event.offsetX;
-                    const y = event.offsetY;
+                const userLabel = parseInt(result.toString().split(" ")[0], 10);
+                
+                userInfo.forEach((obj) => {
+                    if (obj.id === userLabel) {
+                        const drawBox = new faceapi.draw.DrawBox(box, {label: `${obj.name} ${obj.domain}`});
+                        drawBox.draw(canvas);
+                        canvas.addEventListener('click', (event) => {
+                            const x = event.offsetX;
+                            const y = event.offsetY;
 
-                    if ((x >= box.x && x <= (box.x + box.width)) && 
-                        (y >= box.y) && y <= (box.y + box.height)) {
-                        const userLabel = result.toString().split(" ")[0]; 
-                        window.location.href = `/display_information/displayInformation.html?label=${userLabel}`;
+                            if ((x >= box.x && x <= (box.x + box.width)) && 
+                                (y >= box.y) && y <= (box.y + box.height)) {
+                                const userLabel = result.toString().split(" ")[0]; 
+                                window.location.href = `/display_information/displayInformation.html?label=${userLabel}`;
+                            }
+                        });
                     }
                 });
             })
