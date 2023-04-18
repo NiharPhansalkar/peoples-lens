@@ -73,9 +73,18 @@ async function faceRecognition() {
 
             results.forEach((result, i)=> {
                 const box = resizedDetections[i].detection.box;
-                const drawBox = new faceapi.draw.DrawBox(box, {label: result});
-
+                const drawBox = new faceapi.draw.DrawBox(box, {label: "Click to View Details"});
                 drawBox.draw(canvas);
+                canvas.addEventListener('click', (event) => {
+                    const x = event.offsetX;
+                    const y = event.offsetY;
+
+                    if ((x >= box.x && x <= (box.x + box.width)) && 
+                        (y >= box.y) && y <= (box.y + box.height)) {
+                        const userLabel = result.toString().split(" ")[0]; 
+                        window.location.href = `/display_information/displayInformation.html?label=${userLabel}`;
+                    }
+                });
             })
         }, 100);
     });

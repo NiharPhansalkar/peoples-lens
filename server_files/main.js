@@ -8,6 +8,7 @@ const path = require('path'); // For functions like path.join/path.resolve
 const { Pool } = require('pg'); // Connection to postgres
 const nodemailer = require('nodemailer');
 const { promisify } = require('util');
+const url = require('url'); // To get url parameters
 
 const port = 3000;
 
@@ -69,10 +70,17 @@ app.get('/recognize_user/recognizeUser.html', (req, res) => {
     res.sendFile(path.join(path.resolve(__dirname, '../')), '/recognize_user/recognizeUser.html');
 });
 
+app.get('/display_information/displayInformation.html', (req, res) => {
+    res.sendFile(path.join(path.resolve(__dirname, '../')), '/display_information/displayInformation.html');
+});
+
 app.get('/recognize_user/sendID', async (req, res) => {
     try {
         const pool = createPool();
         const result = await pool.query('SELECT id FROM user_information');
+        if (result.rows.length === 0) {
+            return res.json([]);
+        }
         const ids = result.rows.map(row => row.id);
         res.json(ids);
     } catch (err) {
@@ -217,6 +225,32 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
     } catch (err) {
         console.error('Error writing image file', err);
         res.status(500).json({ success: false, error: 'Error writing image file' });
+    }
+});
+
+app.post('/display_information/displayInformation.html', async (req, res) => {
+    const id = req.query.label;    
+
+    try {
+        const dbQuery = `
+            SELECT name, email, domain, bio
+            FROM user_information
+            WHERE id = $1;
+        `;
+
+        const pool = createPool();
+        const dbres = await pool.query(dbQuery, [id]);
+
+        const returnObj = {
+            name: dbres.rows[0].name,
+            email: dbres.rows[0].email,
+            domain: dbres.rows[0].domain,
+            bio: dbres.rows[0].bio,
+        };
+
+        res.json(returnObj);
+    } catch (err) {
+        console.log(err);
     }
 });
 
