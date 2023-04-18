@@ -59,14 +59,23 @@ async function faceRecognition() {
     const labeledFaceDescriptors = await getLabeledFaceDescriptions(labels);
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
 
+    console.log("I always work!");
     video.addEventListener("play", async () => {
         const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
 
         document.body.append(canvas);
-        const displaySize = {width: video.width, height: video.height};
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
+
+        let displaySize = {width: video.width, height: video.height};
+
+        if (window.innerWidth <= 700) {
+            const scale = Math.min(window.innerWidth / videoWidth, window.innerHeight / videoHeight);
+            displaySize = { width: video.videoWidth * scale, height: video.videoHeight * scale };
+        }
 
         faceapi.matchDimensions(canvas, displaySize);
-
+        
         const userInfo = await getUserInformation();
 
         setInterval(async () => {
