@@ -265,8 +265,10 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
             },
             maxContentLength: Infinity,
             maxBodyLength: Infinity,
-        })
+        });
+        console.log(response);
         const parser = new xml2js.Parser({ explicitArray: false });
+
         parser.parseString(response.data, async (err, result) => {
             if (err) {
                 res.status(500).send('Error parsing response');
