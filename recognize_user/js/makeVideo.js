@@ -59,9 +59,9 @@ async function faceRecognition() {
     const labeledFaceDescriptors = await getLabeledFaceDescriptions(labels);
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
 
-    console.log("I always work!");
     video.addEventListener("play", async () => {
         const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
+        console.log("I always work!");
 
         document.body.append(canvas);
         const videoWidth = video.videoWidth;
