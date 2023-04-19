@@ -272,6 +272,7 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
                 res.status(500).send('Error parsing response');
             } else {
                 const photoId = result.photoid;
+                console.log(photoId);
                 const newDbQuery = `
                     UPDATE user_information 
                     SET photoID = $1
