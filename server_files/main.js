@@ -11,6 +11,7 @@ const url = require('url'); // To get url parameters
 const Flickr = require('flickr-sdk');
 const axios = require('axios');
 const FormData = require('form-data');
+const xml2js = require('xml2js');
 
 const port = process.env.PORT || 3000;
 
@@ -265,15 +266,22 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
             maxContentLength: Infinity,
             maxBodyLength: Infinity,
         })
-        const photoId = response.body.photoid._content;
-        const newDbQuery = `
-            UPDATE user_information 
-            SET photoID = $1
-            WHERE id = $2;
-        `;
+        const parser = new xml2js.Parser({ explicitArray: false });
+        parser.parseString(response.data, async (err, result) => {
+            if (err) {
+                res.status(500).send('Error parsing response');
+            } else {
+                const photoId = result.photoid;
+                const newDbQuery = `
+                    UPDATE user_information 
+                    SET photoID = $1
+                    WHERE id = $2;
+                `;
 
-        const newDbRes = await pool.query(newDbQuery, [photoId, dbres.rows[0].id]);
-        res.status(200).json({ success : true });
+                const newDbRes = await pool.query(newDbQuery, [photoId, dbres.rows[0].id]);
+                res.status(200).json({ success : true });
+            }
+        });
     } catch (err) {
         console.error('Error uploading image file', err);
         res.status(500).json({ success: false, error: 'Error writing image file' });
