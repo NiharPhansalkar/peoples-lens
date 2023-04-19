@@ -9,7 +9,7 @@ const nodemailer = require('nodemailer');
 const { promisify } = require('util');
 const url = require('url'); // To get url parameters
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Create an instance of express
 const app = express();
