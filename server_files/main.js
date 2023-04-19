@@ -8,7 +8,7 @@ const { Pool } = require('pg'); // Connection to postgres
 const nodemailer = require('nodemailer');
 const { promisify } = require('util');
 const url = require('url'); // To get url parameters
-const { Flickr } = require('flickr-sdk');
+const Flickr = require('flickr-sdk');
 
 const port = process.env.PORT || 3000;
 
@@ -255,12 +255,20 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
         description: description,
         is_public: 0,
         is_friend: 0,
-        is_family: 0
+        is_family: 0,
+        filename: fileName
     }
     try {
         //await fs.promises.mkdir(dirPath, { recursive : true });
         //await writeFile(filePath, buffer);
-        const response = await flickr.upload(buffer, uploadOptions);
+        const response = await flickr.request({
+          method: 'POST',
+          url: 'https://up.flickr.com/services/upload/',
+          formData: {
+            photo: buffer,
+            ...uploadOptions
+          }
+        });
         const photoId = response.body.photoid._content;
         const newDbQuery = `
             UPDATE user_information 
