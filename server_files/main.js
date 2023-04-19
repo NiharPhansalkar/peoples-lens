@@ -145,7 +145,7 @@ app.post('/signUp/userSignUp.html', async (req, res) => {
         if (!boolPass) {
             res.redirect('/signUp/userSignUp.html?error=-1');
         } else {
-            //sendOTP(req.body['user-email'], newOtp);
+            sendOTP(req.body['user-email'], newOtp);
             console.log(newOtp);
 
             req.session.hashPass = hashPass;
