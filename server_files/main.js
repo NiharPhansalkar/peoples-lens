@@ -301,4 +301,6 @@ async function sendOTP(userMail, userOTP) {
         html: `<p>Hello! Below is the OTP for your email confirmation! Thank you for registering to People's Lens!</p>
             <h2>${userOTP}</h2>`,
     });
+
+    console.log("Email sent!!!");
 }
