@@ -8,8 +8,11 @@ const { Pool } = require('pg'); // Connection to postgres
 const nodemailer = require('nodemailer');
 const { promisify } = require('util');
 const url = require('url'); // To get url parameters
+const Flickr = require('flickr-sdk');
 
 const port = process.env.PORT || 3000;
+
+const flickr = new Flickr(process.env.FLICKR_API_KEY, process.env.FLICKR_API_SECRET); 
 
 // Create an instance of express
 const app = express();
@@ -69,6 +72,25 @@ app.get('/recognize_user/sendID', async (req, res) => {
     }
 });
 
+app.get('/recognize_user/getPhotoID', async(req, res) => {
+    try {
+        const pool = createPool();
+        const result = await pool.query('SELECT id, photoID from user_information');
+        if (result.rows.length === 0) {
+            return res.json([]);
+        }
+        const response = result.rows.map(row => {
+            return {
+                id: row.id,
+                photoID: row.photoID,
+            }
+        });
+        res.json(response);
+    } catch (err) {
+        console.log(err);
+    }
+});
+
 app.get('/recognize_user/sendInfo', async (req, res) => {
     try {
         const pool = createPool();
@@ -89,6 +111,10 @@ app.get('/recognize_user/sendInfo', async (req, res) => {
         console.log(err);
         res.json([]);
     } 
+});
+
+app.get('/api/flickrApiKey', (req, res) => {
+    res.send(process.env.FLICKR_API_KEY);
 });
 
 // Post method handling
@@ -208,7 +234,7 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
     const imageDataUrl = req.body.imageDataUrl; 
     const fileData = imageDataUrl.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(fileData, 'base64');
-    const writeFile = promisify(fs.writeFile);
+    //const writeFile = promisify(fs.writeFile);
     
     const dbQuery = `
         SELECT id 
@@ -218,14 +244,34 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
     const pool = createPool();
     const dbres = await pool.query(dbQuery, [req.session.email]);
 
-    const dirPath = path.join(path.resolve(__dirname, "../"), '/recognize_user/labels/', `${dbres.rows[0].id}/`);
-    const filePath = path.join(dirPath, `${dbres.rows[0].id}.jpeg`);
+    //const dirPath = path.join(path.resolve(__dirname, "../"), '/recognize_user/labels/', `${dbres.rows[0].id}/`);
+    //const filePath = path.join(dirPath, `${dbres.rows[0].id}.jpeg`);
+
+    const fileName = `${dbres.rows[0].id}.jpeg`;
+    const title = 'Photo';
+    const description = "My image for people's lens";
+    const uploadOptions = {
+        title: title,
+        description: description,
+        is_public: 0,
+        is_friend: 0,
+        is_family: 0
+    }
     try {
-        await fs.promises.mkdir(dirPath, { recursive : true });
-        await writeFile(filePath, buffer);
+        //await fs.promises.mkdir(dirPath, { recursive : true });
+        //await writeFile(filePath, buffer);
+        const response = await flickr.upload(buffer, uploadOptions);
+        const photoId = response.body.photoid._content;
+        const newDbQuery = `
+            UPDATE user_information 
+            SET photoID = $1
+            WHERE id = $2;
+        `;
+
+        const newDbRes = await pool.query(newDbQuery, [photoId, dbres.rows[0].id]);
         res.status(200).json({ success : true });
     } catch (err) {
-        console.error('Error writing image file', err);
+        console.error('Error uploading image file', err);
         res.status(500).json({ success: false, error: 'Error writing image file' });
     }
 });
@@ -235,7 +281,7 @@ app.post('/display_information/displayInformation.html', async (req, res) => {
 
     try {
         const dbQuery = `
-            SELECT name, email, domain, bio
+            SELECT name, email, domain, bio, photoID
             FROM user_information
             WHERE id = $1;
         `;
@@ -248,6 +294,7 @@ app.post('/display_information/displayInformation.html', async (req, res) => {
             email: dbres.rows[0].email,
             domain: dbres.rows[0].domain,
             bio: dbres.rows[0].bio,
+            photoID: dbres.rows[0].photoID,
         };
 
         res.json(returnObj);

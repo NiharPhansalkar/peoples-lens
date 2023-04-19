@@ -19,18 +19,39 @@ function startWebcam() {
 }
 
 async function getLabeledFaceDescriptions(labels) {
-    return Promise.all(
-        labels.map(async (label) => {
+    const userPhotos = getPhotoIds();     
+    const labeledFaceDescriptors = [];
+    const apiKey = fetch('/api/flickrApiKey')
+    for (let i = 0; i < labels.length; i++) {
+        const label = labels[i].toString();
+        const user = users.find(user => user.id === label);
+
+        if (user && user.photoID) {
             const descriptions = [];
-            const image = await faceapi.fetchImage(`/recognize_user/labels/${label}/${label}.jpeg`);
+            const image = await faceapi.fetchImage(`https://live.staticflickr.com/${user.photoID}.jpeg?api_key=${apiKey}`);
             const detections = await faceapi
                 .detectSingleFace(image)
                 .withFaceLandmarks()
                 .withFaceDescriptor();
             descriptions.push(detections.descriptor);
-            return new faceapi.LabeledFaceDescriptors(label.toString(), descriptions);
-        })
-    );
+
+            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label, descriptions));
+        }
+    }
+
+    return labeledFaceDescriptors;
+        //return Promise.all(
+        //labels.map(async (label) => {
+        //    const descriptions = [];
+        //    const image = await faceapi.fetchImage(`/recognize_user/labels/${label}/${label}.jpeg`);
+        //    const detections = await faceapi
+        //        .detectSingleFace(image)
+        //        .withFaceLandmarks()
+        //        .withFaceDescriptor();
+        //    descriptions.push(detections.descriptor);
+        //    return new faceapi.LabeledFaceDescriptors(label.toString(), descriptions);
+        //})
+    //);
 }
 
 async function getLabels() {
@@ -43,6 +64,17 @@ async function getLabels() {
         return [];
     }
 }
+
+ async function getPhotoIds() {
+    try {
+        const res = await fetch('/recognize_user/getPhotoID');
+        const idObj = await res.json();
+        return idObj;
+    } catch (err) {
+        console.log(err);
+        return [];
+    }
+ }
 
 async function getUserInformation() {
     try {
@@ -61,7 +93,6 @@ async function faceRecognition() {
 
     video.addEventListener("play", async () => {
         const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
-        console.log("I always work!");
 
         document.body.append(canvas);
         const videoWidth = video.videoWidth;
