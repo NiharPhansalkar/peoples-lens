@@ -1,4 +1,3 @@
-const https = require('https');
 const express = require('express'); // Backend framework to build RESTful API's with NodeJS
 const bcrypt = require('bcrypt'); // Library to hash passwords
 const session = require('express-session'); // To store variables in session
@@ -14,25 +13,6 @@ const port = 3000;
 
 // Create an instance of express
 const app = express();
-
-// Options for https server
-const options = {
-    host: "localhost",
-    port: port,
-    path: "/",
-    rejectUnauthorized: false,
-    requestCert: true,
-    agent: false,
-    key: fs.readFileSync(
-        path.join(path.resolve(__dirname, "../../"), "/certs/myLocalhost.key")
-    ),
-    cert: fs.readFileSync(
-        path.join(path.resolve(__dirname, "../../"), "/certs/myLocalhost.crt")
-    ),
-    ca: fs.readFileSync(
-        path.join(path.resolve(__dirname, "../../"), "/certs/myCA.pem")
-    ),
-};
 
 // Middleware to server static files such as HTML, CSS, Images
 // Define all paths absolute to root of project to serve
@@ -276,10 +256,8 @@ app.post('/display_information/displayInformation.html', async (req, res) => {
     }
 });
 
-// Starting https server
-const server = https.createServer(options, app);
-server.listen(port, () => {
-    console.log("Server is listening on port " + port);
+app.listen(port, () => {
+    console.log("Listening on port " + port);
 });
 
 function generateOTP() {
@@ -289,37 +267,17 @@ function generateOTP() {
 }
 
 function createPool() {
+    const conString = "postgresql://postgres:xhqSnn0hsjJPg3JTvUxc@containers-us-west-12.railway.app:5936/railway";
     return new Pool({
-        database: "LensDB",
-        port: 5432,
-        user: "tigress",
+        connectionString: conString,
+        database: "railway",
+        port: 5936,
+        user: "postgres",
+        password: "xhqSnn0hsjJPg3JTvUxc",
+        host: "containers-us-west-12.railway.app",
         ssl: {
-            rejectUnauthorized: false,
-            key: fs
-                .readFileSync(
-                    path.join(
-                        path.resolve(__dirname, "../../"),
-                        "/certs/myLocalhost.key"
-                    )
-                )
-                .toString(),
-            cert: fs
-                .readFileSync(
-                    path.join(
-                        path.resolve(__dirname, "../../"),
-                        "/certs/myLocalhost.crt"
-                    )
-                )
-                .toString(),
-            ca: fs
-                .readFileSync(
-                    path.join(
-                        path.resolve(__dirname, "../../"),
-                        "/certs/myCA.pem"
-                    )
-                )
-                .toString(),
-        },
+            rejectUnauthorized: false
+        }
     });
 }
 
