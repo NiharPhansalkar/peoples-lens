@@ -251,7 +251,7 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
     //const filePath = path.join(dirPath, `${dbres.rows[0].id}.jpeg`);
     const form = new FormData();
 
-    form.append('photo', buffer, { filename: `${dbres.rows[0].jpeg}` });
+    form.append('photo', buffer, { filename: `${dbres.rows[0].id}.jpeg` });
     form.append('api_key', process.env.FLICKR_API_KEY);
     form.append('api_secret', process.env.FLICKR_API_SECRET);
     form.append('format', 'json');
