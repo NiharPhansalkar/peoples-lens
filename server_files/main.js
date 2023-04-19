@@ -8,7 +8,7 @@ const { Pool } = require('pg'); // Connection to postgres
 const nodemailer = require('nodemailer');
 const { promisify } = require('util');
 const url = require('url'); // To get url parameters
-const Flickr = require('flickr-sdk');
+const { Flickr } = require('flickr-sdk');
 
 const port = process.env.PORT || 3000;
 
