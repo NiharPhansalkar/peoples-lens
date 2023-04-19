@@ -287,7 +287,7 @@ async function sendOTP(userMail, userOTP) {
         secure: false,
         auth: {
             user: "digichit1@gmail.com",
-            pass: "pdocouapfixqowjm",
+            pass: "djlmzgjnzojndhhe",
         },
         tls: {
             rejectUnauthorized: false,
