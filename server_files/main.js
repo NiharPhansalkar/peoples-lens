@@ -9,6 +9,8 @@ const nodemailer = require('nodemailer');
 const { promisify } = require('util');
 const url = require('url'); // To get url parameters
 const Flickr = require('flickr-sdk');
+const axios = require('axios');
+const FormData = require('form-data');
 
 const port = process.env.PORT || 3000;
 
@@ -246,29 +248,23 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
 
     //const dirPath = path.join(path.resolve(__dirname, "../"), '/recognize_user/labels/', `${dbres.rows[0].id}/`);
     //const filePath = path.join(dirPath, `${dbres.rows[0].id}.jpeg`);
+    const form = new FormData();
 
-    const fileName = `${dbres.rows[0].id}.jpeg`;
-    const title = 'Photo';
-    const description = "My image for people's lens";
-    const uploadOptions = {
-        title: title,
-        description: description,
-        is_public: 0,
-        is_friend: 0,
-        is_family: 0,
-        filename: fileName
-    }
+    form.append('photo', buffer, { filename: `${dbres.rows[0].jpeg}` });
+    form.append('api_key', process.env.FLICKR_API_KEY);
+    form.append('api_secret', process.env.FLICKR_API_SECRET);
+    form.append('format', 'json');
+
     try {
         //await fs.promises.mkdir(dirPath, { recursive : true });
         //await writeFile(filePath, buffer);
-        const response = await flickr.request({
-          method: 'POST',
-          url: 'https://up.flickr.com/services/upload/',
-          formData: {
-            photo: buffer,
-            ...uploadOptions
-          }
-        });
+        const response = await axios.post('https://up.flickr.com/services/upload/', form, {
+            headers: {
+                ...form.getHeaders(),
+            },
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity,
+        })
         const photoId = response.body.photoid._content;
         const newDbQuery = `
             UPDATE user_information 
