@@ -258,7 +258,7 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
     const file = bucket.file(fileName);
     try {
         await file.save(buffer, {
-            contentType: 'image/jpeg';
+            contentType: 'image/jpeg'
         });
         console.log(response);
         const [url] = await file.getSignedUrl();
