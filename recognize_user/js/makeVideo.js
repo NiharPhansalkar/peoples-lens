@@ -19,7 +19,6 @@ function startWebcam() {
 }
 
 async function getLabeledFaceDescriptions(labels) {
-    const userPhotos = getPhotoIds();     
     const labeledFaceDescriptors = [];
         return Promise.all(
         labels.map(async (label) => {
