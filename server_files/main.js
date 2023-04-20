@@ -262,7 +262,7 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
         });
         console.log(response);
         const [url] = await file.getSignedUrl();
-        const newDbRes = `
+        const newDbQuery = `
             UPDATE user_information
             SET imageURL = $1
             WHERE id = $2;
