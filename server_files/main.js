@@ -15,8 +15,8 @@ const admin = require('firebase-admin');
 let serviceAccount = require('/peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json');
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount);
-    storageBucket: 'gs://peopleslens-pbl.appspot.com';
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: 'gs://peopleslens-pbl.appspot.com'
 });
 
 const port = process.env.PORT || 3000;
