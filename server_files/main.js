@@ -12,7 +12,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const admin = require('firebase-admin');
 
-let serviceAccount = require('/peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json');
+let serviceAccount = require('../peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json');
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
