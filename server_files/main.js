@@ -260,7 +260,6 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
         await file.save(buffer, {
             contentType: 'image/jpeg'
         });
-        console.log(response);
         const [url] = await file.getSignedUrl();
         const newDbQuery = `
             UPDATE user_information
@@ -268,9 +267,10 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
             WHERE id = $2;
         `;
         const newDbRes = await pool.query(newDbQuery, [url, dbres.rows[0].id]);
+        console.log('Image uploaded successfully!');
         res.status(200).json({ success : true });
     } catch (err) {
-        console.error('Error uploading image file', err);
+        console.error('Error uploading image file ', err);
         res.status(500).json({ success: false, error: 'Error writing image file' });
     }
 });
