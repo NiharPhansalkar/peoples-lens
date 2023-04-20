@@ -84,9 +84,10 @@ app.get('/recognize_user/downloadLink', async (req, res) => {
     const bucket = admin.storage().bucket();
     const fileName = `${label}.jpeg`;
     const file = bucket.file(fileName);
-
+    console.log("Hello!");
     try {
         const [metadata] = await file.getMetadata();
+        console.log("Bye!");
         const downloadUrl = metadata.mediaLink;
         return downloadUrl;
     } catch(error) {
