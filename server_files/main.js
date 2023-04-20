@@ -11,8 +11,10 @@ const url = require('url'); // To get url parameters
 const axios = require('axios');
 const FormData = require('form-data');
 const admin = require('firebase-admin');
+const { v4: uuidv4 } = require('uuid');
 
 let serviceAccount = require('../peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json');
+let firebaseUser;
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -20,6 +22,8 @@ admin.initializeApp({
 });
 
 const port = process.env.PORT || 3000;
+
+createCustomUID();
 
 // Create an instance of express
 const app = express();
@@ -342,4 +346,12 @@ async function sendOTP(userMail, userOTP) {
     });
 
     console.log("Email sent!!!");
+}
+
+async function createCustomUID() {
+    const uid = uuidv4();
+    
+    firebaseUser = await admin.auth().createUser({
+        uid: uid
+    });
 }
