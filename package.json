@@ -23,10 +23,9 @@
     "body-parser": "^1.20.2",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "flickr-sdk": "^6.1.2",
+    "firebase-admin": "^11.7.0",
     "form-data": "^4.0.0",
     "nodemailer": "^6.9.1",
-    "pg": "^8.10.0",
-    "xml2js": "^0.5.0"
+    "pg": "^8.10.0"
   }
 }

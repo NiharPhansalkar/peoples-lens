@@ -8,14 +8,18 @@ const { Pool } = require('pg'); // Connection to postgres
 const nodemailer = require('nodemailer');
 const { promisify } = require('util');
 const url = require('url'); // To get url parameters
-const Flickr = require('flickr-sdk');
 const axios = require('axios');
 const FormData = require('form-data');
-const xml2js = require('xml2js');
+const admin = require('firebase-admin');
+
+let serviceAccount = require('/peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount);
+    storageBucket: 'gs://peopleslens-pbl.appspot.com';
+});
 
 const port = process.env.PORT || 3000;
-
-const flickr = new Flickr(process.env.FLICKR_API_KEY, process.env.FLICKR_API_SECRET); 
 
 // Create an instance of express
 const app = express();
@@ -238,6 +242,7 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
     const fileData = imageDataUrl.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(fileData, 'base64');
     //const writeFile = promisify(fs.writeFile);
+    const bucket = admin.storage().bucket();
     
     const dbQuery = `
         SELECT id 
@@ -249,42 +254,21 @@ app.post('/capture_person/capturePerson.html', async (req, res) => {
 
     //const dirPath = path.join(path.resolve(__dirname, "../"), '/recognize_user/labels/', `${dbres.rows[0].id}/`);
     //const filePath = path.join(dirPath, `${dbres.rows[0].id}.jpeg`);
-    const form = new FormData();
-
-    form.append('photo', buffer, { filename: `${dbres.rows[0].id}.jpeg` });
-    form.append('api_key', process.env.FLICKR_API_KEY);
-    form.append('api_secret', process.env.FLICKR_API_SECRET);
-    form.append('format', 'json');
-
+    const fileName = `${dbres.rows[0].id}.jpeg`;
+    const file = bucket.file(fileName);
     try {
-        //await fs.promises.mkdir(dirPath, { recursive : true });
-        //await writeFile(filePath, buffer);
-        const response = await axios.post('https://up.flickr.com/services/upload/', form, {
-            headers: {
-                ...form.getHeaders(),
-            },
-            maxContentLength: Infinity,
-            maxBodyLength: Infinity,
+        await file.save(buffer, {
+            contentType: 'image/jpeg';
         });
         console.log(response);
-        const parser = new xml2js.Parser({ explicitArray: false });
-
-        parser.parseString(response.data, async (err, result) => {
-            if (err) {
-                res.status(500).send('Error parsing response');
-            } else {
-                const photoId = result.photoid;
-                console.log(photoId);
-                const newDbQuery = `
-                    UPDATE user_information 
-                    SET photoID = $1
-                    WHERE id = $2;
-                `;
-
-                const newDbRes = await pool.query(newDbQuery, [photoId, dbres.rows[0].id]);
-                res.status(200).json({ success : true });
-            }
-        });
+        const [url] = await file.getSignedUrl();
+        const newDbRes = `
+            UPDATE user_information
+            SET imageURL = $1
+            WHERE id = $2;
+        `;
+        const newDbRes = await pool.query(newDbQuery, [url, dbres.rows[0].id]);
+        res.status(200).json({ success : true });
     } catch (err) {
         console.error('Error uploading image file', err);
         res.status(500).json({ success: false, error: 'Error writing image file' });
