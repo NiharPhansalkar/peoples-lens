@@ -11,7 +11,6 @@ const url = require('url'); // To get url parameters
 const axios = require('axios');
 const FormData = require('form-data');
 const admin = require('firebase-admin');
-const cors = require('cors');
 
 let serviceAccount = require('../peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json');
 
@@ -28,8 +27,6 @@ const app = express();
 // Middleware to server static files such as HTML, CSS, Images
 // Define all paths absolute to root of project to serve
 app.use(express.static(path.resolve(__dirname, "../")));
-
-app.use(cors());
 
 app.get('/', (req, res) => {
     res.redirect('/welcome.html');
