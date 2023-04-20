@@ -88,8 +88,7 @@ app.get('/recognize_user/downloadLink', async (req, res) => {
 
     try {
         const [metadata] = await file.getMetadata();
-        //const downloadUrl = metadata.mediaLink;
-        const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${fileName}?alt=media`;
+        const downloadUrl = metadata.mediaLink;
         res.json(downloadUrl);
     } catch(error) {
         console.log(error);
