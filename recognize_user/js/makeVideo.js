@@ -21,37 +21,19 @@ function startWebcam() {
 async function getLabeledFaceDescriptions(labels) {
     const userPhotos = getPhotoIds();     
     const labeledFaceDescriptors = [];
-    const apiKey = fetch('/api/flickrApiKey')
-    for (let i = 0; i < labels.length; i++) {
-        const label = labels[i].toString();
-        const user = users.find(user => user.id === label);
-
-        if (user && user.photoID) {
+        return Promise.all(
+        labels.map(async (label) => {
             const descriptions = [];
-            const image = await faceapi.fetchImage(`https://live.staticflickr.com/${user.photoID}.jpeg?api_key=${apiKey}`);
+            const downloadUrl = await fetch('/recognize_user/downloadLink');
+            const image = await faceapi.fetchImage(downloadUrl);
             const detections = await faceapi
                 .detectSingleFace(image)
                 .withFaceLandmarks()
                 .withFaceDescriptor();
             descriptions.push(detections.descriptor);
-
-            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label, descriptions));
-        }
-    }
-
-    return labeledFaceDescriptors;
-        //return Promise.all(
-        //labels.map(async (label) => {
-        //    const descriptions = [];
-        //    const image = await faceapi.fetchImage(`/recognize_user/labels/${label}/${label}.jpeg`);
-        //    const detections = await faceapi
-        //        .detectSingleFace(image)
-        //        .withFaceLandmarks()
-        //        .withFaceDescriptor();
-        //    descriptions.push(detections.descriptor);
-        //    return new faceapi.LabeledFaceDescriptors(label.toString(), descriptions);
-        //})
-    //);
+            return new faceapi.LabeledFaceDescriptors(label.toString(), descriptions);
+        })
+    );
 }
 
 async function getLabels() {
@@ -64,17 +46,6 @@ async function getLabels() {
         return [];
     }
 }
-
- async function getPhotoIds() {
-    try {
-        const res = await fetch('/recognize_user/getPhotoID');
-        const idObj = await res.json();
-        return idObj;
-    } catch (err) {
-        console.log(err);
-        return [];
-    }
- }
 
 async function getUserInformation() {
     try {

@@ -79,22 +79,18 @@ app.get('/recognize_user/sendID', async (req, res) => {
     }
 });
 
-app.get('/recognize_user/getPhotoID', async(req, res) => {
+app.get('/recognize_user/downloadLink', async (req, res) => {
+    const label = req.query.label;
+    const bucket = admin.storage().bucket();
+    const fileName = `${label}.jpeg`;
+    const file = bucket.file(fileName);
+
     try {
-        const pool = createPool();
-        const result = await pool.query('SELECT id, photoID from user_information');
-        if (result.rows.length === 0) {
-            return res.json([]);
-        }
-        const response = result.rows.map(row => {
-            return {
-                id: row.id,
-                photoID: row.photoID,
-            }
-        });
-        res.json(response);
-    } catch (err) {
-        console.log(err);
+        const [metadata] = await file.getMetadata();
+        const downloadUrl = metadata.mediaLink;
+        return downloadUrl;
+    } catch(error) {
+        console.log(error);
     }
 });
 
@@ -118,10 +114,6 @@ app.get('/recognize_user/sendInfo', async (req, res) => {
         console.log(err);
         res.json([]);
     } 
-});
-
-app.get('/api/flickrApiKey', (req, res) => {
-    res.send(process.env.FLICKR_API_KEY);
 });
 
 // Post method handling
