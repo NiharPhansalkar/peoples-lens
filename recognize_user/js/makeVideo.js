@@ -23,7 +23,8 @@ async function getLabeledFaceDescriptions(labels) {
         return Promise.all(
         labels.map(async (label) => {
             const descriptions = [];
-            const downloadUrl = await fetch(`/recognize_user/downloadLink?label=${label}`);
+            const response = await fetch(`/recognize_user/downloadLink?label=${label}`);
+            const downloadUrl = await response.json();
             const image = await faceapi.fetchImage(downloadUrl);
             const detections = await faceapi
                 .detectSingleFace(image)
