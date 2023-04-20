@@ -84,6 +84,7 @@ app.get('/recognize_user/sendID', async (req, res) => {
 
 app.get('/recognize_user/downloadLink', async (req, res) => {
     const label = req.query.label;
+    const bucketName = 'peopleslens-pbl.appspot.com';
     const bucket = admin.storage().bucket();
     const fileName = `${label}.jpeg`;
     const file = bucket.file(fileName);
