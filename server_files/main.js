@@ -23,8 +23,6 @@ admin.initializeApp({
 
 const port = process.env.PORT || 3000;
 
-createCustomUID();
-
 // Create an instance of express
 const app = express();
 
