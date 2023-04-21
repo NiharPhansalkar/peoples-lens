@@ -33,8 +33,8 @@ async function getLabeledFaceDescriptions(labels) {
             };
             //const image = await faceapi.fetchImage(downloadUrl, options);
             const imageData = await fetch(downloadUrl, options);
-            const buffer = await imageData.arrayBuffer();
-            const image = await faceapi.bufferToImage(buffer);
+            const blob = await imageData.blob();
+            const image = await faceapi.bufferToImage(blob);
             const detections = await faceapi
                 .detectSingleFace(image)
                 .withFaceLandmarks()
