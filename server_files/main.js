@@ -84,23 +84,17 @@ app.get('/recognize_user/sendID', async (req, res) => {
 
 app.get('/recognize_user/downloadLink', async (req, res) => {
     const label = req.query.label;
-    const bucketName = 'peopleslens-pbl.appspot.com';
-    //const bucket = admin.storage().bucket();
-    const fileName = `${label}.jpeg`;
-    const storage = new Storage({keyFilename: '/google-services.json'});
-    const file = storage.bucket(bucketName).file(fileName);
+    //const bucketName = 'peopleslens-pbl.appspot.com';
+    const bucket = admin.storage().bucket();
+    const file = bucket.file(`${label}.jpeg`);
     const options = {
         action: 'read',
         expires: Date.now() + 15 * 60 * 1000,
     }
     try {
-        //const [metadata] = await file.getMetadata();
-        //const downloadUrl = metadata.mediaLink;
-        //let uid = uuidv4();
-        //let authToken = await makeAuthToken(uid);
-        const [downloadUrl] = await file.getSignedUrl(options);
-        console.log(downloadUrl);
-        res.json(downloadUrl);
+        const [downloadUrl, accessToken] = await file.getSignedUrl(options);
+        console.log(accessToken);
+        res.json({downloadUrl, accessToken});
     } catch(error) {
         console.log(error);
     }
