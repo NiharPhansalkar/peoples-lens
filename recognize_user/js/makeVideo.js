@@ -30,11 +30,7 @@ async function getLabeledFaceDescriptions(labels) {
                     Authorization: `Bearer ${authToken}`
                 }
             };
-            try {
-                const image = await faceapi.fetchImage(downloadUrl, options);
-            } catch (err) {
-                console.log(err);
-            }
+            const image = await faceapi.fetchImage(downloadUrl, options);
             const detections = await faceapi
                 .detectSingleFace(image)
                 .withFaceLandmarks()
