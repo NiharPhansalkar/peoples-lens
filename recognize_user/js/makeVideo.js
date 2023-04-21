@@ -32,7 +32,7 @@ async function getLabeledFaceDescriptions(labels) {
                 }
             };
             //const image = await faceapi.fetchImage(downloadUrl, options);
-            const imageData = await fetch(downloadUrl, options);
+            const imageData = await fetch(downloadUrl);
             const blob = await imageData.blob();
             const image = await faceapi.bufferToImage(blob);
             const detections = await faceapi

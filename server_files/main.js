@@ -93,6 +93,9 @@ app.get('/recognize_user/downloadLink', async (req, res) => {
     }
     try {
         const [downloadUrl, accessToken] = await file.getSignedUrl(options);
+        res.set('Access-Control-Allow-Origin', '*');
+        res.set('Access-Control-Expose-Headers', 'Content-Disposition');
+        res.set('Content-Disposition', `inline; filename="${label}.jpeg"`);
         console.log(accessToken);
         res.json({downloadUrl, accessToken});
     } catch(error) {
