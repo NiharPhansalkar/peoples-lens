@@ -92,7 +92,7 @@ app.get('/recognize_user/downloadLink', async (req, res) => {
         const [metadata] = await file.getMetadata();
         const downloadUrl = metadata.mediaLink;
         let uid = uuidv4();
-        let authToken = makeAuthToken(uid);
+        let authToken = await makeAuthToken(uid);
         console.log(authToken);
         res.json({downloadUrl, authToken});
     } catch(error) {
