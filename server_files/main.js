@@ -31,7 +31,7 @@ const app = express();
 // Middleware to server static files such as HTML, CSS, Images
 // Define all paths absolute to root of project to serve
 app.use(express.static(path.resolve(__dirname, "../")));
-app.use(cors());
+app.use(cors({ origin: 'https://peoples-lens-production.up.railway.app/recognize_user/recognizeUser.html' }));
 
 app.get('/', (req, res) => {
     res.redirect('/welcome.html');
