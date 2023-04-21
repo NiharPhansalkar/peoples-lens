@@ -27,7 +27,7 @@ async function getLabeledFaceDescriptions(labels) {
             const {downloadUrl, authToken} = await response.json();
             const options = {
                 headers: {
-                    Authorization: `Bearer ${authToken}`;
+                    Authorization: `Bearer ${authToken}`
                 }
             };
             const image = await faceapi.fetchImage(downloadUrl, options);
