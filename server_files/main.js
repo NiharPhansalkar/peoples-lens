@@ -12,6 +12,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const admin = require('firebase-admin');
 const { v4: uuidv4 } = require('uuid');
+const { Storage } = require('@google-cloud/storage');
 
 let serviceAccount = require('../peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json');
 let firebaseUser;
@@ -84,17 +85,22 @@ app.get('/recognize_user/sendID', async (req, res) => {
 app.get('/recognize_user/downloadLink', async (req, res) => {
     const label = req.query.label;
     const bucketName = 'peopleslens-pbl.appspot.com';
-    const bucket = admin.storage().bucket();
+    //const bucket = admin.storage().bucket();
     const fileName = `${label}.jpeg`;
-    const file = bucket.file(fileName);
-
+    const storage = new Storage();
+    const file = storage.bucket(bucketName).file(fileName);
+    const options = {
+        action: 'read',
+        expires: Date.now() + 15 * 60 * 1000,
+    }
     try {
-        const [metadata] = await file.getMetadata();
-        const downloadUrl = metadata.mediaLink;
-        let uid = uuidv4();
-        let authToken = await makeAuthToken(uid);
+        //const [metadata] = await file.getMetadata();
+        //const downloadUrl = metadata.mediaLink;
+        //let uid = uuidv4();
+        //let authToken = await makeAuthToken(uid);
+        const [downloadUrl] = await file.getSignedUrl(options);
         console.log(downloadUrl);
-        res.json({downloadUrl, authToken});
+        res.json(downloadUrl);
     } catch(error) {
         console.log(error);
     }
