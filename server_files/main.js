@@ -88,7 +88,7 @@ app.get('/recognize_user/downloadLink', async (req, res) => {
     //const bucket = admin.storage().bucket();
     const fileName = `${label}.jpeg`;
     const storage = new Storage();
-    const file = storage.bucket(bucketName).file(fileName);
+    const file = await storage.bucket(bucketName).file(fileName);
     const options = {
         action: 'read',
         expires: Date.now() + 15 * 60 * 1000,
