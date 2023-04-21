@@ -93,7 +93,9 @@ app.get('/recognize_user/downloadLink', async (req, res) => {
     try {
         const [metadata] = await file.getMetadata();
         const downloadUrl = metadata.mediaLink;
-        res.json(downloadUrl);
+        let uid = uuidv4();
+        let authToken = createCustomToken(uid);
+        res.json({downloadUrl, authToken});
     } catch(error) {
         console.log(error);
     }
@@ -348,10 +350,12 @@ async function sendOTP(userMail, userOTP) {
     console.log("Email sent!!!");
 }
 
-async function createCustomUID() {
-    const uid = uuidv4();
-    
-    firebaseUser = await admin.auth().createUser({
-        uid: uid
-    });
+async function makeAuthToken(uid) {
+    try {
+        const token = await admin.auth().createCustomToken(uid);
+        return token;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
