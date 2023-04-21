@@ -25,6 +25,7 @@ async function getLabeledFaceDescriptions(labels) {
             const descriptions = [];
             const response = await fetch(`/recognize_user/downloadLink?label=${label}`);
             const {downloadUrl, authToken} = await response.json();
+            console.log(downloadUrl);
             const options = {
                 headers: {
                     Authorization: `Bearer ${authToken}`
