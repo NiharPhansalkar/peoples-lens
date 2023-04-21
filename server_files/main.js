@@ -87,7 +87,7 @@ app.get('/recognize_user/downloadLink', async (req, res) => {
     const bucketName = 'peopleslens-pbl.appspot.com';
     //const bucket = admin.storage().bucket();
     const fileName = `${label}.jpeg`;
-    const storage = new Storage();
+    const storage = new Storage('../google-services.json');
     const file = storage.bucket(bucketName).file(fileName);
     const options = {
         action: 'read',

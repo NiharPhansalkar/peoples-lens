@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "497689243883",
+    "firebase_url": "https://peopleslens-pbl-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "peopleslens-pbl",
+    "storage_bucket": "peopleslens-pbl.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:497689243883:android:f59e63f9ac1a9de072ceae",
+        "android_client_info": {
+          "package_name": "com.example.peoples_lens"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "497689243883-m89uq45eoh5bm7rodh2r7gqfvma29ke1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHNEPavIhSRc73l4TxTsEOwv1nSOdHBZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "497689243883-m89uq45eoh5bm7rodh2r7gqfvma29ke1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "497689243883-d1fq7rdpvig6gme9qcgdo4hsmbmh6u8f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.peoplesLens"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
