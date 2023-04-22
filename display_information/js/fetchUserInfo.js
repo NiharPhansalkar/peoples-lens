@@ -17,7 +17,7 @@ fetch(`/display_information/displayInformation.html?label=${label}`, {
 .then(() => loadImage())
 .catch(error => console.log(error));
 
-function loadImage() {
+async function loadImage() {
     const userImage = document.getElementById('user-image');
     const response = await fetch(`/recognize_user/downloadLink?label=${label}`);
     const downloadUrl = await response.json();
