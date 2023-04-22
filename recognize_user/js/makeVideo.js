@@ -71,8 +71,6 @@ async function faceRecognition() {
     const labeledFaceDescriptors = await getLabeledFaceDescriptions(labels);
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
 
-    let intervalId;
-
     video.addEventListener("play", async () => {
         const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
 
@@ -91,7 +89,7 @@ async function faceRecognition() {
         
         const userInfo = await getUserInformation();
 
-        intervalId = setInterval(async () => {
+        setInterval(async () => {
             const detections = await faceapi
                 .detectAllFaces(video)
                 .withFaceLandmarks()
@@ -128,9 +126,9 @@ async function faceRecognition() {
             })
         }, 100);
     });
-
     window.addEventListener('beforeunload', () => {
-        video.pause();
-        clearInterval(intervalId);
+      if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+      }
     });
 }
