@@ -99,6 +99,7 @@ async function faceRecognition() {
             });
 
             results.forEach(async (result, i)=> {
+                console.log(result);
                 const box = resizedDetections[i].detection.box;
                 const userLabel = parseInt(result.toString().split(" ")[0], 10);
                 
