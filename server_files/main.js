@@ -287,7 +287,7 @@ app.post('/display_information/displayInformation.html', async (req, res) => {
 
     try {
         const dbQuery = `
-            SELECT name, email, domain, bio, photoID
+            SELECT name, email, domain, bio
             FROM user_information
             WHERE id = $1;
         `;
@@ -300,7 +300,6 @@ app.post('/display_information/displayInformation.html', async (req, res) => {
             email: dbres.rows[0].email,
             domain: dbres.rows[0].domain,
             bio: dbres.rows[0].bio,
-            photoID: dbres.rows[0].photoID,
         };
 
         res.json(returnObj);
