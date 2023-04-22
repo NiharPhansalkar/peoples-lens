@@ -93,10 +93,10 @@ app.get('/recognize_user/downloadLink', async (req, res) => {
     const bucketName = 'peopleslens-pbl.appspot.com';
     const fileName = `${label}.jpeg`;
     const options = {
-        version: 'v4';
+        version: 'v4',
         action: 'read',
         expires: Date.now() + 15 * 60 * 1000,
-        accessControl: 'public-read';
+        accessControl: 'public-read'
     }
     try {
         const [downloadUrl] = await storage.bucket(bucketName).file(fileName).getSignedUrl(options);
