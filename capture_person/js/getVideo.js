@@ -2,7 +2,12 @@ const video = document.querySelector(".video");
 const camBtn = document.querySelector(".camera");
 const canvas = document.querySelector(".canvas");
 
-navigator.mediaDevices.getUserMedia({ video: true })
+navigator.mediaDevices.getUserMedia({ 
+        video: {
+            facingMode: 'user'
+        }, 
+        audio: false
+    })
     .then(stream => {
         video.srcObject = stream;
         video.play();
