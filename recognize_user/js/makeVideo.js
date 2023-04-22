@@ -65,9 +65,8 @@ async function faceRecognition() {
     const labels = await getLabels();
     const labeledFaceDescriptors = await getLabeledFaceDescriptions(labels);
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
-    console.log("I am being called");
-    video.addEventListener("loadedmetadata", async () => {
-        console.log("Am I being called?");
+
+    //video.addEventListener("play", async () => {
         const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
 
         document.body.append(canvas);
@@ -121,5 +120,5 @@ async function faceRecognition() {
                 });
             })
         }, 100);
-    });
+    //});
 }
