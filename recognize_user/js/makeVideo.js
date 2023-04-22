@@ -66,69 +66,72 @@ async function getUserInformation() {
     }
 }
 
+async function createDrawBox(){
+    const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
+
+    document.body.append(canvas);
+    const videoWidth = video.videoWidth;
+    const videoHeight = video.videoHeight;
+
+    let displaySize = {width: video.width, height: video.height};
+
+    if (window.innerWidth <= 700) {
+        const scale = Math.min(window.innerWidth / videoWidth, window.innerHeight / videoHeight);
+        displaySize = { width: video.videoWidth * scale, height: video.videoHeight * scale };
+    }
+
+    faceapi.matchDimensions(canvas, displaySize);
+        
+    const userInfo = await getUserInformation();
+
+    setInterval(async () => {
+        const detections = await faceapi
+            .detectAllFaces(video)
+            .withFaceLandmarks()
+            .withFaceDescriptors();
+            
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+
+        const results = resizedDetections.map((d) => {
+            return faceMatcher.findBestMatch(d.descriptor);
+        });
+
+        results.forEach(async (result, i)=> {
+            const box = resizedDetections[i].detection.box;
+            const userLabel = parseInt(result.toString().split(" ")[0], 10);
+            
+            userInfo.forEach((obj) => {
+                if (obj.id === userLabel) {
+                    const drawBox = new faceapi.draw.DrawBox(box, {label: `${obj.name} ${obj.domain}`});
+                    drawBox.draw(canvas);
+                    canvas.addEventListener('click', (event) => {
+                        const x = event.offsetX;
+                        const y = event.offsetY;
+
+                        if ((x >= box.x && x <= (box.x + box.width)) && 
+                            (y >= box.y) && y <= (box.y + box.height)) {
+                            const userLabel = result.toString().split(" ")[0]; 
+                            window.location.href = `/display_information/displayInformation.html?label=${userLabel}`;
+                        }
+                    });
+                }
+            });
+        })
+    }, 100);
+}
+
 async function faceRecognition() {
     const labels = await getLabels();
     const labeledFaceDescriptors = await getLabeledFaceDescriptions(labels);
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
 
-    video.addEventListener("play", async () => {
-        const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
-
-        document.body.append(canvas);
-        const videoWidth = video.videoWidth;
-        const videoHeight = video.videoHeight;
-
-        let displaySize = {width: video.width, height: video.height};
-
-        if (window.innerWidth <= 700) {
-            const scale = Math.min(window.innerWidth / videoWidth, window.innerHeight / videoHeight);
-            displaySize = { width: video.videoWidth * scale, height: video.videoHeight * scale };
-        }
-
-        faceapi.matchDimensions(canvas, displaySize);
-        
-        const userInfo = await getUserInformation();
-
-        setInterval(async () => {
-            const detections = await faceapi
-                .detectAllFaces(video)
-                .withFaceLandmarks()
-                .withFaceDescriptors();
-            
-            const resizedDetections = faceapi.resizeResults(detections, displaySize);
-
-            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-
-            const results = resizedDetections.map((d) => {
-                return faceMatcher.findBestMatch(d.descriptor);
-            });
-
-            results.forEach(async (result, i)=> {
-                const box = resizedDetections[i].detection.box;
-                const userLabel = parseInt(result.toString().split(" ")[0], 10);
-                
-                userInfo.forEach((obj) => {
-                    if (obj.id === userLabel) {
-                        const drawBox = new faceapi.draw.DrawBox(box, {label: `${obj.name} ${obj.domain}`});
-                        drawBox.draw(canvas);
-                        canvas.addEventListener('click', (event) => {
-                            const x = event.offsetX;
-                            const y = event.offsetY;
-
-                            if ((x >= box.x && x <= (box.x + box.width)) && 
-                                (y >= box.y) && y <= (box.y + box.height)) {
-                                const userLabel = result.toString().split(" ")[0]; 
-                                window.location.href = `/display_information/displayInformation.html?label=${userLabel}`;
-                            }
-                        });
-                    }
-                });
-            })
-        }, 100);
-    });
-    window.addEventListener('beforeunload', () => {
-      if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
-      }
-    });
+    if (video.paused) {
+        video.addEventListener("play", async () => {
+            createDrawBox();
+        });
+    } else {
+        createDrawBox();
+    }
 }
