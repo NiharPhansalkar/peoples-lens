@@ -65,8 +65,9 @@ async function faceRecognition() {
     const labels = await getLabels();
     const labeledFaceDescriptors = await getLabeledFaceDescriptions(labels);
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
-
+    console.log("I am being called");
     video.addEventListener("play", async () => {
+        console.log("Am I being called?");
         const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
 
         document.body.append(canvas);
@@ -99,7 +100,6 @@ async function faceRecognition() {
             });
 
             results.forEach(async (result, i)=> {
-                console.log(result);
                 const box = resizedDetections[i].detection.box;
                 const userLabel = parseInt(result.toString().split(" ")[0], 10);
                 
