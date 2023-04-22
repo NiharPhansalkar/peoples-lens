@@ -10,7 +10,12 @@ Promise.all([
 
 
 function startWebcam() {
-    navigator.mediaDevices.getUserMedia({ video : true, audio: false})
+    navigator.mediaDevices.getUserMedia({ 
+        video : {
+            facingMode: 'environment'
+        }, 
+        audio: false,
+    })
     .then((stream) => {
         video.srcObject = stream;
     }).catch((err) => {
