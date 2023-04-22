@@ -24,7 +24,7 @@ admin.initializeApp({
 });
 
 const storage = new Storage({
-    keyFilename: '../peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json'
+    keyFilename: path.join(path.resolve(__dirname, "../"), '/peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json')
 });
 
 const port = process.env.PORT || 3000;
