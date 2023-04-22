@@ -23,7 +23,7 @@ admin.initializeApp({
     storageBucket: 'gs://peopleslens-pbl.appspot.com'
 });
 
-const storage = Storage({
+const storage = new Storage({
     keyFilename: '../peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json'
 });
 
