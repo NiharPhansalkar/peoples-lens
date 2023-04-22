@@ -66,7 +66,7 @@ async function faceRecognition() {
     const labeledFaceDescriptors = await getLabeledFaceDescriptions(labels);
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
     console.log("I am being called");
-    video.addEventListener("play", async () => {
+    video.addEventListener("loadedmetadata", async () => {
         console.log("Am I being called?");
         const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
 
