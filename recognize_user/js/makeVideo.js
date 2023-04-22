@@ -66,7 +66,7 @@ async function getUserInformation() {
     }
 }
 
-async function createDrawBox(){
+async function createDrawBox(faceMatcher){
     const canvas = faceapi.createCanvasFromMedia(video, { willReadFrequently: true }); 
 
     document.body.append(canvas);
@@ -129,9 +129,9 @@ async function faceRecognition() {
 
     if (video.paused) {
         video.addEventListener("play", async () => {
-            createDrawBox();
+            createDrawBox(faceMatcher);
         });
     } else {
-        createDrawBox();
+        createDrawBox(faceMatcher);
     }
 }
