@@ -23,6 +23,10 @@ admin.initializeApp({
     storageBucket: 'gs://peopleslens-pbl.appspot.com'
 });
 
+const storage = Storage({
+    keyFilename: '../peopleslens-pbl-firebase-adminsdk-pohc3-6f89177c29.json'; 
+});
+
 const port = process.env.PORT || 3000;
 
 // Create an instance of express
@@ -86,20 +90,20 @@ app.get('/recognize_user/sendID', async (req, res) => {
 
 app.get('/recognize_user/downloadLink', async (req, res) => {
     const label = req.query.label;
-    //const bucketName = 'peopleslens-pbl.appspot.com';
-    const bucket = admin.storage().bucket();
-    const file = bucket.file(`${label}.jpeg`);
+    const bucketName = 'peopleslens-pbl.appspot.com';
+    const fileName = `${label}.jpeg`;
     const options = {
+        version: 'v4';
         action: 'read',
         expires: Date.now() + 15 * 60 * 1000,
+        accessControl: 'public-read';
     }
     try {
-        const [downloadUrl, accessToken] = await file.getSignedUrl(options);
+        const [downloadUrl] = await storage.bucket(bucketName).file(fileName).getSignedUrl(options);
         res.set('Access-Control-Allow-Origin', '*');
         res.set('Access-Control-Expose-Headers', 'Content-Disposition');
         res.set('Content-Disposition', `inline; filename="${label}.jpeg"`);
-        console.log(accessToken);
-        res.json({downloadUrl, accessToken});
+        res.json(downloadUrl);
     } catch(error) {
         console.log(error);
     }
