@@ -5,6 +5,5 @@ CREATE TABLE user_information(
     email varchar( 255 ) UNIQUE NOT NULL,
     name varchar ( 50 ),
     password varchar ( 80 ) NOT NULL,
-    phone varchar ( 10 ) UNIQUE,
-    imageUrl varchar ( 100 )
+    phone varchar ( 10 ) UNIQUE
 );
