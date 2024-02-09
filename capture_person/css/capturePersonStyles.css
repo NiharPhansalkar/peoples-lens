@@ -1,66 +1,80 @@
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.nav-custom {
+  background-color: #5e17eb !important;
+  color: white;
 }
 
 .top-container {
-    height: 92.9vh;
-    background: url("/images/loginBackground.jpg");
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  background-color: white;
+  height: 92.9vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-container > h2 {
+  color: #5e17eb;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 2.5rem;
+  text-align: center;
 }
 
 .camera {
-    width: 500px;
-    height: 400px;
-    position: relative;
-    border: 5px solid darkblue;
+  width: 500px;
+  height: 400px;
+  position: relative;
+  border: 4px solid black;
+  border-radius: 8px;
 }
 
 .video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .camera-button {
-    width: 64px;
-    font-size: 2em;
-    font-weight: bold;
-    padding: 0.5rem;
-    border-radius: 50%;
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%) translateY(-20px);
-    background-color: transparent;
-    border: 2px solid white;
-    color: white;
-    text-align: center;
+  width: 64px;
+  font-size: 2em;
+  font-weight: bold;
+  padding: 0.5rem;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%) translateY(-20px);
+  background-color: transparent;
+  border: 2px solid black;
+  color: black;
+  text-align: center;
 }
 
 .camera-button:hover {
-    background-color: white;
-    color: #222;
-    transition: all 0.2s linear;
-    cursor: pointer;
+  background-color: white;
+  color: #222;
+  transition: all 0.2s linear;
+  cursor: pointer;
 }
 
 .effect {
-    opacity: 0.5;
-    transition: all 100ms ease;
+  opacity: 0.5;
+  transition: all 100ms ease;
 }
 
 .canvas {
-    display: none;
+  display: none;
 }
 
 @media (max-width: 700px) {
-    .camera {
-        height: 400px;        
-        width: 300px;
-    }
+  .camera {
+    height: 400px;
+    width: 300px;
+  }
 }
