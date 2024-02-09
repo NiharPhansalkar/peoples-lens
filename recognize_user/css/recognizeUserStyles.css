@@ -12,6 +12,11 @@
   height: 92.8vh;
 }
 
+.nav-custom {
+  background-color: #5e17eb !important;
+  color: white;
+}
+
 video {
   max-width: 100%;
   max-height: 100%;
