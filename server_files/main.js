@@ -378,7 +378,7 @@ async function sendOTP(userMail, userOTP) {
     host: "smtp.gmail.com",
     secure: false,
     auth: {
-      user: "digichit1@gmail.com",
+      user: "todolo.list@gmail.com",
       pass: `${process.env.APP_PASSWORD}`,
     },
     tls: {
